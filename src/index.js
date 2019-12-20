@@ -135,7 +135,60 @@ export default class AgeGate {
       return collection
     }, {})
 
-    this.respond(this.verify(this.formData))
+    this.validateForm(this.formData, elements)
+  }
+
+  /**
+   * Return number of days in specified month
+   * 
+   * @param {integer} month 
+   * @param {integer} year 
+   */
+  daysInMonth (month, year) {
+    return new Date(year, month, 0).getDate();
+  }
+
+  /**
+   * Validate form fields
+   * REFACTOR: add ability for user to turn js validation on or off
+   * 
+   * @param {Object} formData
+   * @param {NodeList} elements
+   */
+  validateForm (formData, elements) {
+    const currentYear = new Date().getFullYear()
+          
+    let month = formData.month,
+        day = formData.day,
+        year = formData.year,
+        errorLog = []
+
+    // verify all field data meets its requirements
+    Object.keys(formData).forEach(field => {
+      // verify year entered is not older than 110 years old and not greater than current year
+      if (field === 'year' && (currentYear - year > 110 || currentYear < year)) errorLog.push(field)
+      // verify valid month (1-12) has been entered 
+      else if (field === 'month' && (month < 1 || month > 12)) errorLog.push(field)
+      // verify entered month's date is a valid date
+      else if (field === 'day' && (day < 1 || day > this.daysInMonth(month, year))) errorLog.push(field)
+    })
+
+    // reset all input fields error callout
+    Object.keys(elements).forEach(field => {
+      // change all elements of type 'text' to default styling
+      if (elements[field].type === 'text') elements[field].style.borderColor = 'grey'
+    })
+
+    // check errorLog for errors
+    if (errorLog.length) {
+      // if there are errors, add call-out styling to the field(s)
+      errorLog.forEach(field => {
+        elements[field].style.borderColor = 'red' // REFACTOR: make this editable through user options
+      })
+      // if there are no errors, proceed to verifying user's age
+    } else {
+      this.respond(this.verify(this.formData)) 
+    }
   }
 
   /**
@@ -149,20 +202,20 @@ export default class AgeGate {
   verify (formData) {
     let ok = false
     let legalAge = this.ages[formData.country] || this.legalAge
+    let currentDate = new Date()
     let bday = [
-      parseInt(formData.year, 10),
-      parseInt(formData.month, 10) || 1,
-      parseInt(formData.day, 10) || 1
+      parseInt(formData.year, 10) || currentDate.getFullYear(),
+      parseInt(formData.month, 10) || currentDate.getMonth() + 1,
+      parseInt(formData.day, 10) || currentDate.getDate()
     ].join('/')
     let age = ~~((new Date().getTime() - +new Date(bday)) / (31557600000))
-
+    let expiry = formData.remember ? this.options.cookieExpiry : null
+    
     if (age >= legalAge) {
-      let expiry = formData.remember ? this.options.cookieExpiry : null
-      this.saveCookie(expiry)
-
       ok = true
     }
-
+    
+    this.saveCookie(expiry, ok)
     return ok
   }
 
@@ -171,11 +224,11 @@ export default class AgeGate {
    *
    * @param {*} expiry - Cookie expiration (0|Infinity|Date)
    */
-  saveCookie (expiry = null) {
+  saveCookie (expiry = null, pass = false) {
     const path = this.options.path || null
     const domain = this.options.cookieDomain || null
 
-    cookies.setItem(this.options.cookieName || 'old_enough', true, expiry, path, domain)
+    cookies.setItem(this.options.cookieName || 'old_enough', pass, expiry, path, domain)
   }
 
   /**
