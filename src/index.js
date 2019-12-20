@@ -180,7 +180,7 @@ export default class AgeGate {
     })
 
     // check errorLog for errors
-    if (errorLog.length) {
+    if (errorLog.length && !!this.options.formValidation) {
       // if there are errors, add call-out styling to the field(s)
       errorLog.forEach(field => {
         elements[field].style.borderColor = 'red' // REFACTOR: make this editable through user options

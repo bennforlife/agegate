@@ -5,6 +5,7 @@ let options = {
   name: 'old_enough_custom_name',
   countries: true,
   expiry: Infinity,
+  formValidation: true,
   data: [
     { code: 'IN', name: 'India', age: 18 },
     { code: 'UK', name: 'United Kingdom', age: 18 },

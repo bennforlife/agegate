@@ -78,6 +78,7 @@ Name | Type | Default | Required | Description
 --- | --- | --- | --- | ---
 **age** | `number` | `18` | | Custom legal age to verify against. Overridden if `countries` is set to `true`
 **form** | `Element` || ✓ | `<form>` DOM element
+**formValidation** | `boolean` | `false` || Enable/disable JavaScript form field date validation
 **countries** | `boolean` | `false` | | For alcohol-related apps, validates age against minimum legal drinking age in selected country. Setting `true` enables the `<select>` list of countries to choose from
 **data** | `Array` | | | Override the default and populate the `<select>` with your own data in the required data structure <sup>`[1]`</sup>
 **cookieExpiry** | `number`, `Infinity`, `Date` | `0` | | Sets the expiration of the cookie in seconds. `0` is session-only. `Infinity` is forever. Supply a [Date object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) for any custom length of time
