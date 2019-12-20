@@ -13,6 +13,7 @@
   "scripts": {
     "develop": "npm run watch",
     "develop:test": "npm run build:test && npm run server:test",
+    "develop:example": "watch 'npm run build && npm run js:example' ./src",
     "build": "babel --modules umd src/ --out-dir dist/",
     "build:test": "npm run js:test",
     "watch": "watch 'npm run build' ./src",
