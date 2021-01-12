@@ -164,7 +164,8 @@
       value: function validateForm(formData, elements) {
         var _this = this;
 
-        var currentYear = new Date().getFullYear();
+        var currentYear = new Date().getFullYear(),
+            errorClass = 'age-gate__input--error';
 
         var month = formData.month,
             day = formData.day,
@@ -184,14 +185,14 @@
         // reset all input fields error callout
         Object.keys(elements).forEach(function (field) {
           // change all elements of type 'text' to default styling
-          if (elements[field].type === 'text') elements[field].style.borderColor = 'grey';
+          if (elements[field].type === 'text') elements[field].classList.remove(errorClass);
         });
 
         // check errorLog for errors
         if (errorLog.length && !!this.options.formValidation) {
           // if there are errors, add call-out styling to the field(s)
           errorLog.forEach(function (field) {
-            elements[field].style.borderColor = 'red'; // REFACTOR: make this editable through user options
+            elements[field].classList.add(errorClass);
           });
           // if there are no errors, proceed to verifying user's age
         } else {
