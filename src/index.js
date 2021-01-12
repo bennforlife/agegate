@@ -159,7 +159,8 @@ export default class AgeGate {
    */
   validateForm (formData, elements) {
     const currentYear = new Date().getFullYear(),
-          errorClass = 'age-gate__input--error'
+          errorClass = 'agegate__input--error',
+          errorMessage = this.options.form.querySelector('.agegate__error-message')
           
     let month = formData.month,
         day = formData.day,
@@ -188,8 +189,10 @@ export default class AgeGate {
       errorLog.forEach(field => {
         elements[field].classList.add(errorClass)
       })
+      errorMessage.classList.add('agegate__error-message--show')
       // if there are no errors, proceed to verifying user's age
     } else {
+      errorMessage.classList.remove('agegate__error-message--show')
       this.respond(this.verify(this.formData)) 
     }
   }
