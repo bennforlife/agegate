@@ -1,5 +1,7 @@
 import * as data from './data'
 import cookies from './cookies'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 const FORM_ELEMENTS = ['year', 'month', 'day', 'country', 'remember']
 
@@ -200,15 +202,16 @@ export default class AgeGate {
    * @param {Object} formData
    */
   verify (formData) {
+    dayjs.extend(relativeTime)
     let ok = false
     let legalAge = this.ages[formData.country] || this.legalAge
-    let currentDate = new Date()
+    let currentDate = dayjs()
     let bday = [
       parseInt(formData.year, 10) || currentDate.getFullYear(),
       parseInt(formData.month, 10) || currentDate.getMonth() + 1,
       parseInt(formData.day, 10) || currentDate.getDate()
     ].join('/')
-    let age = ~~((new Date().getTime() - +new Date(bday)) / (31557600000))
+    let age = currentDate.diff(bday, 'year')
     let expiry = formData.remember ? this.options.cookieExpiry : null
     
     if (age >= legalAge) {

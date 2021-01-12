@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['exports', 'module', './data', './cookies'], factory);
+    define(['exports', 'module', './data', './cookies', 'dayjs', 'dayjs/plugin/relativeTime'], factory);
   } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-    factory(exports, module, require('./data'), require('./cookies'));
+    factory(exports, module, require('./data'), require('./cookies'), require('dayjs'), require('dayjs/plugin/relativeTime'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, mod, global.data, global.cookies);
+    factory(mod.exports, mod, global.data, global.cookies, global.dayjs, global.relativeTime);
     global.index = mod.exports;
   }
-})(this, function (exports, module, _data, _cookies) {
+})(this, function (exports, module, _data, _cookies, _dayjs, _dayjsPluginRelativeTime) {
   'use strict';
 
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -20,6 +20,10 @@
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   var _cookies2 = _interopRequireDefault(_cookies);
+
+  var _dayjs2 = _interopRequireDefault(_dayjs);
+
+  var _relativeTime = _interopRequireDefault(_dayjsPluginRelativeTime);
 
   var FORM_ELEMENTS = ['year', 'month', 'day', 'country', 'remember'];
 
@@ -206,11 +210,12 @@
     }, {
       key: 'verify',
       value: function verify(formData) {
+        _dayjs2['default'].extend(_relativeTime['default']);
         var ok = false;
         var legalAge = this.ages[formData.country] || this.legalAge;
-        var currentDate = new Date();
+        var currentDate = (0, _dayjs2['default'])();
         var bday = [parseInt(formData.year, 10) || currentDate.getFullYear(), parseInt(formData.month, 10) || currentDate.getMonth() + 1, parseInt(formData.day, 10) || currentDate.getDate()].join('/');
-        var age = ~ ~((new Date().getTime() - +new Date(bday)) / 31557600000);
+        var age = currentDate.diff(bday, 'year');
         var expiry = formData.remember ? this.options.cookieExpiry : null;
 
         if (age >= legalAge) {
